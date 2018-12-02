@@ -4,8 +4,13 @@
 </head>
 </head>
 <body>
+<div class="container">
     <div th:insert="particles/navbar :: navbar"></div>
-    <p>Druga strona<span th:text="${appName}"></span></p>
+    <p>Druga strona <span th:text="${category}"></span></p>
+    <th:block th:each="product : ${products}">
+        <p th:text="${product.model}">Model </p>
+    </th:block>
     <div th:replace="particles/footer :: footer"></div>
+</div>
 </body>
 </html>
