@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MusicShop</title>
+<head th:replace="particles/header :: head">
+</head>
 </head>
 <body>
-    <p>Druga strona<span th:text="${appName}">App</span></p>
+    <div th:insert="particles/navbar :: navbar"></div>
+    <p>Druga strona<span th:text="${appName}"></span></p>
+    <div th:replace="particles/footer :: footer"></div>
 </body>
 </html>
