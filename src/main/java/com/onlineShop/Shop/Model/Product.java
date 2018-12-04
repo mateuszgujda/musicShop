@@ -1,4 +1,4 @@
-package com.onlineShop.Shop.products;
+package com.onlineShop.Shop.Model;
 
 public class Product {
     private String product_id;

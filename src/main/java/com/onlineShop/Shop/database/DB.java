@@ -6,8 +6,8 @@ import java.io.FileReader;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
-import com.onlineShop.Shop.products.*;
+
+import com.onlineShop.Shop.Model.Product;
 
 public class DB {
     private Connection conn = null;
@@ -101,7 +101,7 @@ public class DB {
             connect();
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM produkty WHERE producent = ?");
             ps.setObject(1,producer);
-            
+
             rs = ps.executeQuery();
 
             printProductsQuery();
