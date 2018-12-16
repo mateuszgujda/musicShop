@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="/particles/header :: head">
+</head>
+<body>
+    <div class="container">
+        <div th:insert="/particles/navbar :: navbar"></div>
+        <h1 class="text-center">Panel administracyjny</h1>
+        <div class="row justify-content-md-center">
+        <div class="btn-group">
+            <a href="/admin/users" class="btn btn-primary disabled">Users</a>
+            <a href="/admin/productsPanel" class="btn btn-primary">Products</a>
+            <a href="/admin/categoriesPanel" class="btn btn-primary">Categories</a>
+            <a href="#" class="btn btn-primary">Orders</a>
+        </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="user: ${users}">
+                <tr>
+                    <th scope="row" th:text="${user.id}"></th>
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.email}"></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+        <div th:replace="/particles/footer :: footer"></div>
+    </div>
+
+
+</body>
+</html>

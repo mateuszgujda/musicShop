@@ -1,15 +1,36 @@
 package com.onlineShop.Shop.Model;
 
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Data
+@Entity
+@Table(name="products")
 public class Product {
-    private String product_id;
+    @Id
+    @Column(name= "product_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int product_id;
+    @Column(name=" model")
     private String model;
+    @Column (name= "producer")
     private String producer;
+    @Column (name = "description")
     private String description;
-    private String category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+    @Column(name="amount")
     private Integer amount;
+    @Column (name="price")
     private Double price;
 
-    public Product(String product_id, String model, String producer, String description, String category, Integer amount, Double price){
+    public Product(){
+
+    }
+
+    public Product(int product_id, String model, String producer, String description, Category category, Integer amount, Double price){
         this.product_id=product_id;
         this.model=model;
         this.producer=producer;
@@ -27,7 +48,7 @@ public class Product {
         return amount;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
@@ -43,7 +64,7 @@ public class Product {
         return producer;
     }
 
-    public String getProduct_id() {
+    public int getProduct_id() {
         return product_id;
     }
 
@@ -51,7 +72,7 @@ public class Product {
         this.amount = amount;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
@@ -71,7 +92,7 @@ public class Product {
         this.producer = producer;
     }
 
-    public void setProduct_id(String product_id) {
+    public void setProduct_id(int product_id) {
         this.product_id = product_id;
     }
 }

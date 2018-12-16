@@ -7,15 +7,11 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+            <th:block th:each="category : ${categories}">
             <li class="nav-item">
-                <a class="nav-link" href="/products?category=guitar">Guitars<span class="sr-only">(current)</span></a>
+                <a class="nav-link" th:href="@{/products(category=${category.category})}"><th:block th:text="${category.category}"></th:block></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/products?category=drum">Drums</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/products?category=amp">Amplifiers</a>
-            </li>
+            </th:block>
         </ul>
         <ul class="navbar-nav navbar-right">
             <li class="nav-item" sec:authorize="isAnonymous()">
@@ -28,7 +24,7 @@
                 <a class="nav-link" th:href="@{/logout}" >Logout</a>
             </li>
             <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link" href="#" >AdminPanel</a>
+                <a class="nav-link" href="/admin" >AdminPanel</a>
             </li>
 
         </ul>

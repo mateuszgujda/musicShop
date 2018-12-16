@@ -16,6 +16,7 @@ import com.onlineShop.Shop.security.SecurityConfig;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 
 @Service("userService")
@@ -36,6 +37,12 @@ public class UserService implements UserDetailsService {
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public List<User> findAll(){
+        List<User> users = userRepository.findAll();
+
+        return users;
     }
 
     public void saveUser(User user) {
