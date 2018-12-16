@@ -11,7 +11,7 @@ public class Product {
     @Id
     @Column(name= "product_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int product_id;
+    private int id;
     @Column(name=" model")
     private String model;
     @Column (name= "producer")
@@ -31,7 +31,7 @@ public class Product {
     }
 
     public Product(int product_id, String model, String producer, String description, Category category, Integer amount, Double price){
-        this.product_id=product_id;
+        this.id=product_id;
         this.model=model;
         this.producer=producer;
         this.description=description;
@@ -65,7 +65,7 @@ public class Product {
     }
 
     public int getProduct_id() {
-        return product_id;
+        return id;
     }
 
     public void setAmount(Integer amount) {
@@ -93,6 +93,6 @@ public class Product {
     }
 
     public void setProduct_id(int product_id) {
-        this.product_id = product_id;
+        this.id = product_id;
     }
 }

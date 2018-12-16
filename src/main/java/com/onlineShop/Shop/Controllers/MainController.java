@@ -104,7 +104,16 @@ public class MainController {
 
     @RequestMapping(value="/admin/categoriesPanel",method = RequestMethod.GET)
     public ModelAndView categoriesPanel(){
-        ModelAndView model = new ModelAndView("/admin/categoriesPanel");
+        ModelAndView model = new ModelAndView("admin/categoriesPanel");
+
+        return model;
+    }
+
+    @RequestMapping(value="/admin/productsPanel/{id}",method = RequestMethod.GET)
+    public ModelAndView productEditPanel(@PathVariable int id){
+        ModelAndView model = new ModelAndView("admin/editProduct");
+        Product product = productService.getProductByID(id);
+        model.addObject("product",product);
 
         return model;
     }

@@ -33,4 +33,9 @@ public class ProductService{
         return products;
     }
 
+    public Product getProductByID(int id){
+
+        return productRepository.findById(id);
+    }
+
 }

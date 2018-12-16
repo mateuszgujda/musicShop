@@ -14,7 +14,7 @@
             <a href="#" class="btn btn-primary">Orders</a>
         </div>
         </div>
-        <table class="table table-bordered">
+        <table class="table table-bordered mt-2">
             <thead>
             <tr>
                 <th scope="col">ID</th>
@@ -23,12 +23,13 @@
                 <th scope="col">Price</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Category</th>
+                <th scope="col">Action</th>
             </tr>
             </thead>
             <tbody>
             <th:block th:each="product: ${products}">
                 <tr>
-                    <th scope="row" th:text="${product.product_id}"></th>
+                    <th scope="row" th:text="${product.id}"></th>
                     <td th:text="${product.model}"></td>
                     <td th:text="${product.producer}"></td>
                     <td th:text="${product.price}"></td>
@@ -36,6 +37,15 @@
                     <th:block th:each="category: ${categories}">
                         <td th:if="${product.category} == ${category}" th:text="${category.category}"></td>
                     </th:block>
+                    <td>
+                        <a  style="text-decoration : none" title="Edit product" th:href="@{productsPanel/{id}(id=${product.id})}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <span></span>
+                        <a style="text-decoration : none" title="Delete product" th:href="@{productsPanel/{id}/delete(id=${product.id})}">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
                 </tr>
             </th:block>
             </tbody>
