@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.Model;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -112,15 +114,45 @@ public class MainController {
     @RequestMapping(value="/admin/productsPanel/{id}",method = RequestMethod.GET)
     public ModelAndView productEditPanel(@PathVariable int id){
         ModelAndView model = new ModelAndView("admin/editProduct");
+        String filename = "/static/img/rpoducts/"+id;
+        model.addObject("directory",new File(getClass().getResource(filename).getFile()));
         Product product = productService.getProductByID(id);
         model.addObject("product",product);
 
         return model;
     }
 
+    @RequestMapping(value="/admin/productsPanel/{id}/delete",method = RequestMethod.GET )
+    public ModelAndView deleteProduct(@PathVariable int id){
+
+        String fileName = "/static/img/products/"+id;
+        File file = new File(getClass().getResource(fileName).getFile());
+
+
+        if (file.getAbsoluteFile().exists()) {
+            if (file.isDirectory()) {
+                FileSystemUtils.deleteRecursively(file);
+                productService.deleteProductByID(id);
+            }
+        }
+
+        return new ModelAndView("redirect:/admin/productsPanel");
+    }
+
+    @RequestMapping(value="/admin/productsPanel/{id}/edit",method = RequestMethod.POST)
+    public ModelAndView editProduct(@Valid Product product_to_edit,@PathVariable int id){
+        Product exists = productService.getProductByID(id);
+                if(exists != null){
+                    productService.updateProductByID(id,product_to_edit);
+                }
+
+
+        return new ModelAndView("redirect:/admin/productsPanel");
+    }
+
     @RequestMapping(value="/admin/productsPanel",method = RequestMethod.GET)
     public ModelAndView productsPanel(){
-        ModelAndView model = new ModelAndView("/admin/productsPanel");
+        ModelAndView model = new ModelAndView("admin/productsPanel");
         List<Product> products = productService.getAllProducts();
         model.addObject("products",products);
 

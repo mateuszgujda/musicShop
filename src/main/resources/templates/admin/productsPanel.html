@@ -38,11 +38,11 @@
                         <td th:if="${product.category} == ${category}" th:text="${category.category}"></td>
                     </th:block>
                     <td>
-                        <a  style="text-decoration : none" title="Edit product" th:href="@{productsPanel/{id}(id=${product.id})}">
+                        <a  style="text-decoration : none" title="Edit product" th:href="@{/admin/productsPanel/{id}(id=${product.id})}">
                             <i class="far fa-edit"></i>
                         </a>
                         <span></span>
-                        <a style="text-decoration : none" title="Delete product" th:href="@{productsPanel/{id}/delete(id=${product.id})}">
+                        <a style="text-decoration : none" title="Delete product" th:href="@{/admin/productsPanel/{id}/delete(id=${product.id})}">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>

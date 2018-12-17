@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="row justify-content-md-center mt-2">
-            <form action="#" th:action="@{admin/productsPanel/{id}/edit(id=${product.id})}"  th:object="${product}" method="post">
+            <form action="#" th:action="@{/admin/productsPanel/{id}/edit(id=${product.id})}"  th:object="${product}" method="post">
                     <div class="form-group row">
                         <label for="model">Product model</label>
                         <input id="model" class="form-control" type="text" th:value="*{model}" th:field="*{model}">
@@ -39,19 +39,25 @@
                     </div>
                     <div class="form-group row">
                     <label for="desc">Product description</label>
-                    <textarea class="form-control" id="desc" rows="3" th:text="*{description}"></textarea>
+                    <textarea class="form-control" id="desc" rows="3" th:text="*{description}" th:field="*{description}"></textarea>
                     </div>
                      <div class="form-group row">
-                        <label for="category">Product category</label>
-                        <select class="form-control" id="category">
-                            <th:block th:each="category : ${categories}">
-                                <div th:switch="${category}">
-                                    <option th:case="*{category}" selected th:text="${category.category}"></option>
-                                    <option th:case="*" th:text="${category.category}"></option>
-                                </div>
-                            </th:block>
-                        </select>
+                        <label for="category.select">Product category</label>
+                         <select id="category.select" th:field="*{category.category_id}" class="form-control">
+                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.category_id}" value="">
+                            </option>
+                         </select>
                     </div>
+                    <div class="form-group">
+                            <label class="col-sm-3 control-label">
+                                Product Images
+                            </label>
+                            <div class="col-sm-9">
+                               <span class="btn btn-default btn-file">
+                                <input id="input-2" name="input2[]" type="file" class="file" multiple data-show-upload="true" data-show-caption="true">
+                            </span>
+                            </div>
+                        </div>
                     <div class="form-group ">
                             <button type="submit" class="btn btn-success">Edit product</button>
                             <a href="/admin/productsPanel" class="btn btn-danger">Go back</a>

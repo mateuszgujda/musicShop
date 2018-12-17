@@ -27,6 +27,14 @@ public class Category {
     public  Category(){
     }
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "category_id=" + category_id +
+                ", category='" + category + '\'' +
+                ", products=" + products +
+                '}';
+    }
 
     public void setCategory(String category) {
         this.category = category;

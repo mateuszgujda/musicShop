@@ -8,6 +8,7 @@ import com.onlineShop.Shop.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,4 +39,19 @@ public class ProductService{
         return productRepository.findById(id);
     }
 
+    public void deleteProductByID(int id) {
+        productRepository.deleteById(id);
+    }
+
+    public void updateProductByID(int id,Product product_to_edit){
+        Product product_to_update= productRepository.getOne(id);
+       product_to_update.setModel(product_to_edit.getModel());
+       product_to_update.setProducer(product_to_edit.getProducer());
+       product_to_update.setDescription(product_to_edit.getDescription());
+       product_to_update.setPrice(product_to_edit.getPrice());
+       product_to_update.setCategory(product_to_edit.getCategory());
+       product_to_update.setAmount(product_to_edit.getAmount());
+
+        productRepository.save(product_to_update);
+    }
 }
