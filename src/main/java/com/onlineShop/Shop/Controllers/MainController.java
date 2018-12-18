@@ -114,8 +114,9 @@ public class MainController {
     @RequestMapping(value="/admin/productsPanel/{id}",method = RequestMethod.GET)
     public ModelAndView productEditPanel(@PathVariable int id){
         ModelAndView model = new ModelAndView("admin/editProduct");
-        String filename = "/static/img/rpoducts/"+id;
-        model.addObject("directory",new File(getClass().getResource(filename).getFile()));
+        String filename = "/static/img/products/"+id;
+        File directory = new File(getClass().getResource(filename).getFile());
+        model.addObject("files",directory.listFiles());
         Product product = productService.getProductByID(id);
         model.addObject("product",product);
 
