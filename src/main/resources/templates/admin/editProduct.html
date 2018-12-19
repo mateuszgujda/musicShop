@@ -48,18 +48,32 @@
                             </option>
                          </select>
                     </div>
-                    <div class="form-group">
-                            <div class="btn-group">
-                                <input id="images" type="file" class="btn btn-primary" th:field="${files}" multiple>
-                                <span id="clear" class="btn btn-primary disabled">Clear </span>
-                            </div>
-                        <output id="result" />
-                    </div>
                     <div class="form-group ">
                             <button type="submit" class="btn btn-success">Edit product</button>
                             <a href="/admin/productsPanel" class="btn btn-danger">Go back</a>
                     </div>
             </form>
+        <div class="col-md-4 ml-2">
+            <form th:action="@{/admin/productsPanel/{id}/photos/add(id=${product.product_id})}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div th:if="${error} != null" th:text="${error}"
+                         class="alert alert-danger"></div>
+                    <div th:if="${nofile} != null" th:text="${nofile}" class="alert alert-danger">
+                    </div>
+                    <div class="btn-group">
+                        <input name="photo" id="images" type="file" class="btn btn-primary">
+                        <input type="submit" id="add" class="btn btn-primary" value="Add">
+                    </div>
+                    <div class="form-group" id="photoHolder">
+                        <th:block th:each="file, i: ${files}">
+                            <img width="200px" height="200px" class="img-thumbnail" th:src="@{/img/products/{id}/{num}.jpg(id=${product.product_id},num=${i.count})}" alt="img" />
+                            <a th:href="@{/admin/productsPanel/{id}/photos/{num}/delete(id=${product.product_id},num=${i.count})}" class="fas fa-trash-alt" title="Delete Photo"></a>
+                        </th:block>
+                    </div>
+                    <output id="result" />
+                </div>
+            </form>
+        </div>
         </div>
 
         <div th:replace="/particles/footer :: footer"></div>

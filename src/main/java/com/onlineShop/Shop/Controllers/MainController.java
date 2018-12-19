@@ -15,13 +15,22 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Blob;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -112,13 +121,21 @@ public class MainController {
     }
 
     @RequestMapping(value="/admin/productsPanel/{id}",method = RequestMethod.GET)
-    public ModelAndView productEditPanel(@PathVariable int id){
+    public ModelAndView productEditPanel(@PathVariable int id, Model fromAdd){
         ModelAndView model = new ModelAndView("admin/editProduct");
+        String error =(String) fromAdd.asMap().get("error");
+        String nofile= (String) fromAdd.asMap().get("nofile");
         String filename = "/static/img/products/"+id;
         File directory = new File(getClass().getResource(filename).getFile());
         model.addObject("files",directory.listFiles());
         Product product = productService.getProductByID(id);
         model.addObject("product",product);
+        if(error != null){
+            model.addObject("error",error);
+        }
+        if(nofile != null){
+            model.addObject("nofile",nofile);
+        }
 
         return model;
     }
@@ -139,6 +156,42 @@ public class MainController {
 
         return new ModelAndView("redirect:/admin/productsPanel");
     }
+
+    @RequestMapping(value="/admin/productsPanel/{id}/photos/{num}/delete",method = RequestMethod.GET)
+    public ModelAndView deletePhoto(@PathVariable int id ,@PathVariable int num){
+        String fileName = "/static/img/products/"+id+"/"+num+".jpg";
+        File img_toDelete = new File(getClass().getResource(fileName).getFile());
+        FileSystemUtils.deleteRecursively(img_toDelete);
+
+        return new ModelAndView("redirect:/admin/productsPanel/"+id);
+    }
+
+    @RequestMapping(value="/admin/productsPanel/{id}/photos/add",method=RequestMethod.POST)
+    public ModelAndView addPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo, RedirectAttributes redirectAttributes){
+        String directoryName= "/static/img/products/"+id;
+        File directory = new File(getClass().getResource(directoryName).getFile());
+        File[] files= directory.listFiles();
+        int num = files.length+1;
+        if(photo.isEmpty()){
+            redirectAttributes.addFlashAttribute("nofile","Select file to upload");
+            return new ModelAndView("redirect:/admin/productsPanel/"+id);       }
+        try {
+            File uploaded = new File(getClass().getResource(directoryName).getFile()+ "/" + num + ".jpg");
+            if(uploaded.createNewFile()){
+                FileOutputStream fos = new FileOutputStream(uploaded);
+                fos.write(photo.getBytes());
+
+                fos.close();
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error","Something went wrong");
+        }
+
+        return new ModelAndView("redirect:/admin/productsPanel/"+id);
+    }
+
 
     @RequestMapping(value="/admin/productsPanel/{id}/edit",method = RequestMethod.POST)
     public ModelAndView editProduct(@Valid Product product_to_edit,@PathVariable int id){
