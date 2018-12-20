@@ -14,12 +14,27 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import javax.sql.DataSource;
 
 
+/**
+ * Class that handles our authentication
+ * Class is handled mostly by {@link WebSecurityConfigurerAdapter}
+ *
+ * @author  Mateusz Gujda
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    /**
+     * our database connection handler
+     */
     @Autowired
     private DataSource dataSource;
 
+    /**
+     * Configuring authentication connection
+     * @param auth AuthenticationManagerBuilder
+     * @throws Exception If anything goes wrong
+     */
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
@@ -28,6 +43,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(bCryptPasswordEncoder());
     }
 
+    /**
+     * Our configuration which Requests need authorization
+     * @param http {@link HttpSecurity}
+     * @throws Exception if anything during authorization goes wrong
+     */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http
@@ -50,6 +70,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    /**
+     * Function that helps us with password encoding
+     * @return  {@link BCryptPasswordEncoder} object which we can use to code and decode password
+     */
     @Bean(name="BCryptPasswordEncoder")
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();

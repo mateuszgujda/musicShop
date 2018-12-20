@@ -33,18 +33,37 @@ import java.sql.Blob;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * MainController is a class that handles all requests
+ *
+ * @author Mateusz Gujda
+ */
+
 @RestController
 public class MainController {
-
+    /**
+     * JPA service that enables getting {@link com.onlineShop.Shop.Model.User} and {@link com.onlineShop.Shop.Model.Role} information from database
+     */
     @Autowired
     UserService userService;
 
+    /**
+     * JPA service that enables getting {@link com.onlineShop.Shop.Model.Product} information from database
+     */
     @Autowired
     ProductService productService;
-
+    /**
+     * JPA service that enables getting {@link com.onlineShop.Shop.Model.Category} information from database
+     */
     @Autowired
     CategoryService categoryService;
 
+    /**
+     * Method handles the /products mapping and returns list of  {@link com.onlineShop.Shop.Model.Product} based on {@link com.onlineShop.Shop.Model.Category}
+     * @param model holds information about attribute that we pass
+     * @param category holds information about what category to choose from
+     * @return function returns the products template from thymeleaf templates folder
+     */
     @RequestMapping(value = "/products",params = {"category"}, method = RequestMethod.GET)
     ModelAndView products(Model model, @RequestParam("category") String category){
         ModelAndView products =  new ModelAndView("products");
@@ -56,12 +75,20 @@ public class MainController {
         return products;
     }
 
+    /**
+     * Method handles displaying the main page
+     * @return  returns the index template from thymeleaf folder
+     */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     ModelAndView index(){
         ModelAndView index= new ModelAndView("index");
         return index;
     }
 
+    /**
+     * Method handles displaying the login page
+     * @return returns the login template from thymleaf folder
+     */
     @RequestMapping(value="/login",method = RequestMethod.GET)
     ModelAndView login(){
         ModelAndView login = new ModelAndView("login");
@@ -69,8 +96,11 @@ public class MainController {
     }
 
 
-
-
+    /**
+     * Method handles displaying the register form page
+     * @param model helds information  about errors during applying the register form
+     * @return returns the register template from thymeleaf folder
+     */
     @RequestMapping(value="/register", method= RequestMethod.GET)
     public ModelAndView register(Model model){
         ModelAndView register = new ModelAndView();
@@ -78,6 +108,12 @@ public class MainController {
         return register;
     }
 
+    /**
+     * Method handles new user register by taking it from {@link #register(Model)} and adding to database via {@link UserService}
+     * @param user user is a {@link com.onlineShop.Shop.Model.User} object containing information from form
+     * @param result result has informtion about errors and adds it to the model
+     * @return function retrns a view model which is a mapping to {@link #register(Model)} method with result parameters
+     */
     @RequestMapping(value="/register", method= RequestMethod.POST)
     public ModelAndView registerUser(@Valid User user, BindingResult result){
         ModelAndView model = new ModelAndView();
@@ -97,6 +133,10 @@ public class MainController {
     }
 
 
+    /**
+     * Function handles displaying /admin mapping
+     * @return function returns adminPanel template from resources/templates folder
+     */
     @RequestMapping(value="/admin",method = RequestMethod.GET)
     public  ModelAndView adminPanel(){
         ModelAndView model = new ModelAndView("admin/adminPanel");
@@ -104,6 +144,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     *Function handles displaying all users for administration purposes
+     * Function finds all {@link User} from the database  adds them to the model
+     * @return returns userPanel template frome resoucres/templates folder
+     */
     @RequestMapping(value="/admin/users",method = RequestMethod.GET)
     public ModelAndView usersPanel(){
         ModelAndView model = new ModelAndView("admin/users");
@@ -113,6 +158,10 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Function handles displaying all categories for administration purposes
+     * @return function returns categoriesPanel template from resources/templates folder
+     */
     @RequestMapping(value="/admin/categoriesPanel",method = RequestMethod.GET)
     public ModelAndView categoriesPanel(){
         ModelAndView model = new ModelAndView("admin/categoriesPanel");
@@ -120,6 +169,12 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Function handles displaying {@link Product} edit form
+     * @param id id is a parameter by which we select the {@link Product} to edit
+     * @param fromAdd fromAdd model has errors that comes from {@link #addPhoto(int, MultipartFile, RedirectAttributes)}
+     * @return returns the editProduct template from resources/templates folder
+     */
     @RequestMapping(value="/admin/productsPanel/{id}",method = RequestMethod.GET)
     public ModelAndView productEditPanel(@PathVariable int id, Model fromAdd){
         ModelAndView model = new ModelAndView("admin/editProduct");
@@ -140,6 +195,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Handles deliting {@link Product} from the database
+     * @param id id is a parameter by which we select which {@link Product} to delete
+     * @return Function redirects to productPanel {@link #productsPanel()}
+     */
     @RequestMapping(value="/admin/productsPanel/{id}/delete",method = RequestMethod.GET )
     public ModelAndView deleteProduct(@PathVariable int id){
 
@@ -157,6 +217,12 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel");
     }
 
+    /**
+     * Function handles deleting photos from resources folder
+     * @param id id is a parameter by which the product is chosen
+     * @param num num is a parameter that tells which number is the photo numer to remove
+     * @return
+     */
     @RequestMapping(value="/admin/productsPanel/{id}/photos/{num}/delete",method = RequestMethod.GET)
     public ModelAndView deletePhoto(@PathVariable int id ,@PathVariable int num){
         String fileName = "/static/img/products/"+id+"/"+num+".jpg";
@@ -166,6 +232,13 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel/"+id);
     }
 
+    /**
+     * Function handles uploading  photos to resources
+     * @param id parameter that identifies the product to which we add photos
+     * @param photo file that we chosen in the form
+     * @param redirectAttributes eventual errors that we pass
+     * @return function redirects us to {@link #editProduct(Product, int)};
+     */
     @RequestMapping(value="/admin/productsPanel/{id}/photos/add",method=RequestMethod.POST)
     public ModelAndView addPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo, RedirectAttributes redirectAttributes){
         String directoryName= "/static/img/products/"+id;
@@ -192,7 +265,12 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel/"+id);
     }
 
-
+    /**
+     * Function handles overwriting product in the database with the product from form
+     * @param product_to_edit product which was created in the form
+     * @param id id of the product to overwrite
+     * @return function redirects us to {@link #productsPanel()}
+     */
     @RequestMapping(value="/admin/productsPanel/{id}/edit",method = RequestMethod.POST)
     public ModelAndView editProduct(@Valid Product product_to_edit,@PathVariable int id){
         Product exists = productService.getProductByID(id);
@@ -204,6 +282,10 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel");
     }
 
+    /**
+     * Function handles displaying all products from the database for administration purposes
+     * @return function returns productsPanel generated template from resources/template folder
+     */
     @RequestMapping(value="/admin/productsPanel",method = RequestMethod.GET)
     public ModelAndView productsPanel(){
         ModelAndView model = new ModelAndView("admin/productsPanel");
@@ -213,6 +295,10 @@ public class MainController {
         return model;
     }
 
+    /**
+     *Function that enables us to access all categories in Thymeleaf templates
+     * @return returns all Categories from the database
+     */
     @ModelAttribute("categories")
     public List<Category> categories() {
         return categoryService.findAll();

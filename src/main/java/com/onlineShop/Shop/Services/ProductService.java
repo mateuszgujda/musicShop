@@ -12,13 +12,29 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Class that handles getting {@link Product} via {@link ProductRepository} from the database
+ *
+ */
 @Service("productService")
 public class ProductService{
+
+    /**
+     *  Repository from which we get products from the database
+     */
     @Autowired
     private ProductRepository productRepository;
+
+    /**
+     * Repository from which we get categories from the database
+     */
     @Autowired
     private CategoryRepository categoryRepository;
 
+    /**
+     * Function that handle selecting all products
+     * @return List of all Products from the database
+     */
     public List<Product> getAllProducts(){
         List<Product> products = new LinkedList<>();
         products = productRepository.findAll();
@@ -26,6 +42,11 @@ public class ProductService{
         return products;
     }
 
+    /**
+     * Function that handles selecting all products in the same category
+     * @param category category name by which we select products
+     * @return List of products that have category given in the function argument
+     */
     public List<Product> getProductsByCategory(String category){
         Category category_to_check = categoryRepository.findByCategory(category);
         List<Product> products = new LinkedList<>();
@@ -34,15 +55,29 @@ public class ProductService{
         return products;
     }
 
+    /**
+     * Function that handles selectin product by ID
+     * @param id int by which we select the product
+     * @return Product object  found in the database
+     */
     public Product getProductByID(int id){
 
         return productRepository.findById(id);
     }
 
+    /**
+     * Function that handles deleting product by ID
+     * @param id int by which we select the product to delete
+     */
     public void deleteProductByID(int id) {
         productRepository.deleteById(id);
     }
 
+    /**
+     * Function that updates the product in te database by ID
+     * @param id int by which we select the product to update
+     * @param product_to_edit Product we receive from the edit form {@link com.onlineShop.Shop.Controllers.MainController#editProduct(Product, int)}
+     */
     public void updateProductByID(int id,Product product_to_edit){
         Product product_to_update= productRepository.getOne(id);
        product_to_update.setModel(product_to_edit.getModel());
