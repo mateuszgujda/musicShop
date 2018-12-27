@@ -14,4 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category,Integer> {
      * @return Category object from the database with the name given in the parameter
      */
     Category findByCategory(String category);
+
+    Category findByCategoryID(int id);
 }

@@ -14,6 +14,7 @@
             <a href="#" class="btn btn-primary">Orders</a>
         </div>
         </div>
+
         <table class="table table-bordered mt-2">
             <thead>
             <tr>
@@ -29,7 +30,7 @@
             <tbody>
             <th:block th:each="product: ${products}">
                 <tr>
-                    <th scope="row" th:text="${product.id}"></th>
+                    <th scope="row" th:text="${product.categoryID}"></th>
                     <td th:text="${product.model}"></td>
                     <td th:text="${product.producer}"></td>
                     <td th:text="${product.price}"></td>
@@ -38,11 +39,10 @@
                         <td th:if="${product.category} == ${category}" th:text="${category.category}"></td>
                     </th:block>
                     <td>
-                        <a  style="text-decoration : none" title="Edit product" th:href="@{/admin/productsPanel/{id}(id=${product.id})}">
+                        <a  style="text-decoration : none" title="Edit product" th:href="@{/admin/productsPanel/{categoryID}(categoryID=${product.categoryID})}">
                             <i class="far fa-edit"></i>
                         </a>
-                        <span></span>
-                        <a style="text-decoration : none" title="Delete product" th:href="@{/admin/productsPanel/{id}/delete(id=${product.id})}">
+                        <a style="text-decoration : none" title="Delete product" th:href="@{/admin/productsPanel/{categoryID}/delete(categoryID=${product.categoryID})}">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>

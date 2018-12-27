@@ -15,14 +15,14 @@
             </div>
         </div>
         <div class="row justify-content-md-center mt-2">
-            <form action="#" th:action="@{/admin/productsPanel/{id}/edit(id=${product.id})}"  th:object="${product}" method="post">
+            <form action="#" th:action="@{/admin/productsPanel/{categoryID}/edit(categoryID=${product.categoryID})}"  th:object="${product}" method="post">
                     <div class="form-group row">
                         <label for="model">Product model</label>
-                        <input id="model" class="form-control" type="text" th:value="*{model}" th:field="*{model}">
+                        <input categoryID="model" class="form-control" type="text" th:value="*{model}" th:field="*{model}">
                     </div>
                     <div class="form-group row">
                         <label for="producer">Product producer</label>
-                        <input id="producer" type="text" class="form-control" th:value="*{producer}" th:field="*{producer}">
+                        <input categoryID="producer" type="text" class="form-control" th:value="*{producer}" th:field="*{producer}">
                     </div>
                     <div class="form-group row">
                         <label class="sr-only" for="price">Product price</label>
@@ -30,21 +30,21 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text">zł</div>
                             </div>
-                            <input type="text" class="form-control" id="price" th:value="*{price}" th:field="*{price}">
+                            <input type="text" class="form-control" categoryID="price" th:value="*{price}" th:field="*{price}">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="amount">Product amount</label>
-                        <input id="amount" class="form-control" th:value="*{amount}" th:field="*{amount}">
+                        <input categoryID="amount" class="form-control" th:value="*{amount}" th:field="*{amount}">
                     </div>
                     <div class="form-group row">
                     <label for="desc">Product description</label>
-                    <textarea class="form-control" id="desc" rows="3" th:text="*{description}" th:field="*{description}"></textarea>
+                    <textarea class="form-control" categoryID="desc" rows="3" th:text="*{description}" th:field="*{description}"></textarea>
                     </div>
                      <div class="form-group row">
                         <label for="category.select">Product category</label>
-                         <select id="category.select" th:field="*{category.category_id}" class="form-control">
-                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.category_id}" value="">
+                         <select categoryID="category.select" th:field="*{category.categoryID}" class="form-control">
+                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.categoryID}" value="">
                             </option>
                          </select>
                     </div>
@@ -54,23 +54,23 @@
                     </div>
             </form>
         <div class="col-md-4 ml-2">
-            <form th:action="@{/admin/productsPanel/{id}/photos/add(id=${product.product_id})}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/admin/productsPanel/{categoryID}/photos/add(categoryID=${product.product_id})}" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <div th:if="${error} != null" th:text="${error}"
                          class="alert alert-danger"></div>
                     <div th:if="${nofile} != null" th:text="${nofile}" class="alert alert-danger">
                     </div>
                     <div class="btn-group">
-                        <input name="photo" id="images" type="file" class="btn btn-primary">
-                        <input type="submit" id="add" class="btn btn-primary" value="Add">
+                        <input name="photo" categoryID="images" type="file" class="btn btn-primary">
+                        <input type="submit" categoryID="add" class="btn btn-primary" value="Add">
                     </div>
-                    <div class="form-group" id="photoHolder">
+                    <div class="form-group" categoryID="photoHolder">
                         <th:block th:each="file, i: ${files}">
-                            <img width="200px" height="200px" class="img-thumbnail" th:src="@{/img/products/{id}/{num}.jpg(id=${product.product_id},num=${i.count})}" alt="img" />
-                            <a th:href="@{/admin/productsPanel/{id}/photos/{num}/delete(id=${product.product_id},num=${i.count})}" class="fas fa-trash-alt" title="Delete Photo"></a>
+                            <img width="200px" height="200px" class="img-thumbnail" th:src="@{/img/products/{categoryID}/{num}.jpg(categoryID=${product.product_id},num=${i.count})}" alt="img" />
+                            <a style="text-decoration : none" th:href="@{/admin/productsPanel/{categoryID}/photos/{num}/delete(categoryID=${product.product_id},num=${i.count})}" class="fas fa-trash-alt" title="Delete Photo"></a>
                         </th:block>
                     </div>
-                    <output id="result" />
+                    <output categoryID="result" />
                 </div>
             </form>
         </div>
