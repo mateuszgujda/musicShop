@@ -32,12 +32,6 @@ public class CategoryService {
         return found;
     }
 
-    public Category getCategoryById(int id){
-        Category found = categoryRepository.findByCategoryID(id);
-
-        return found;
-    }
-
     /**
      * Function gets all the categories in the database
      * @return Function returns List containing all categories

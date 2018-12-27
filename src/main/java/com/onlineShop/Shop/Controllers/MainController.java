@@ -295,16 +295,6 @@ public class MainController {
         return model;
     }
 
-    @RequestMapping(value="/admin/categoriesPanel/{id}/edit",method = RequestMethod.GET)
-    public ModelAndView editCategory(@PathVariable int id){
-        ModelAndView model = new ModelAndView("admin/editCategory");
-        Category category_to_edit = categoryService.getCategoryById(id);
-        model.addObject("toEdit",category_to_edit);
-
-        return model;
-    }
-
-
     /**
      *Function that enables us to access all categories in Thymeleaf templates
      * @return returns all Categories from the database

@@ -9,7 +9,7 @@
     <div class="row mt-4">
     <th:block th:each="product : ${products}">
         <div class="card col-md-3 col-lg-3 col-sm-12">
-            <img class="card-img-top" th:src="@{'/img/products/'+${product.categoryID}+'/1.jpg'}" th:alt="${product.producer} +' '+${product.model} "/>
+            <img class="card-img-top" th:src="@{'/img/products/'+${product.id}+'/1.jpg'}" th:alt="${product.producer} +' '+${product.model} "/>
             <div class="card-body">
                 <a href="#"><h5 class="card-title" th:text="${product.producer} +' '+${product.model}"></h5></a>
                 <p class="card-text" th:text="${product.description}"></p>

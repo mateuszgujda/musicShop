@@ -20,22 +20,13 @@
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
-                <th scope="col">Action</th>
             </tr>
             </thead>
             <tbody>
             <th:block th:each="category: ${categories}">
                 <tr>
-                    <th scope="row" th:text="${category.categoryID}"></th>
+                    <th scope="row" th:text="${category.category_id}"></th>
                     <td th:text="${category.category}"></td>
-                    <td>
-                        <a  style="text-decoration : none" title="Edit category" th:href="@{/admin/categoriesPanel/{categoryID}(categoryID=${category.categoryID})}">
-                            <i class="far fa-edit"></i>
-                        </a>
-                        <a style="text-decoration : none" title="Delete category" th:href="@{/admin/categoriesPanel/{categoryID}/delete(categoryID=${category.categoryID})}">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
                 </tr>
             </th:block>
             </tbody>
