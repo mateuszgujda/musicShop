@@ -282,6 +282,23 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel");
     }
 
+    @RequestMapping(value = "/admin/productsPanel/add",method = RequestMethod.GET)
+    public ModelAndView addProduct(){
+        ModelAndView model = new ModelAndView("admin/addProduct");
+        model.addObject("product",new Product());
+
+        return model;
+    }
+
+    @RequestMapping(value = "/admin/productsPanel/add",method = RequestMethod.POST)
+    public ModelAndView saveProduct(@Valid Product toAdd){
+        productService.addProduct(toAdd);
+        String path = getClass().getResource("/static/img/products").getPath();
+        File directory = new File(path+"/"+toAdd.getProduct_id());
+        directory.mkdir();
+        return new ModelAndView("redirect:/admin/productsPanel/"+toAdd.getProduct_id());
+    }
+
     /**
      * Function handles displaying all products from the database for administration purposes
      * @return function returns productsPanel generated template from resources/template folder
@@ -310,6 +327,23 @@ public class MainController {
         if(exists !=  null){
             categoryService.updateCategoryById(id,toEdit);
         }
+
+        return new ModelAndView("redirect:/admin/categoriesPanel");
+    }
+
+    @RequestMapping(value="/admin/categoriesPanel/add",method = RequestMethod.GET)
+    public ModelAndView addCategory(){
+        ModelAndView model = new ModelAndView("admin/addCategory");
+        Category toAdd = new Category();
+        model.addObject("toAdd",toAdd);
+
+        return  model;
+    }
+
+
+    @RequestMapping(value="/admin/categoriesPanel/add", method = RequestMethod.POST)
+    public  ModelAndView saveCategory(@ModelAttribute("name") Category toAdd){
+        categoryService.addCategory(toAdd);
 
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }

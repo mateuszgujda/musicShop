@@ -89,4 +89,8 @@ public class ProductService{
 
         productRepository.save(product_to_update);
     }
+
+    public  void addProduct(Product toAdd){
+        productRepository.save(toAdd);
+    }
 }

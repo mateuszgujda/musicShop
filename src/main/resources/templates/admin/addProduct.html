@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="/particles/header :: head">
+</head>
+<body>
+    <div class="container">
+        <div th:insert="/particles/navbar :: navbar"></div>
+        <h1 class="text-center">Panel administracyjny</h1>
+        <div class="row justify-content-md-center">
+            <div class="btn-group">
+                <a href="/admin/users" class="btn btn-primary">Users</a>
+                <a href="/admin/productsPanel" class="btn btn-primary disabled">Products</a>
+                <a href="/admin/categoriesPanel" class="btn btn-primary">Categories</a>
+                <a href="#" class="btn btn-primary">Orders</a>
+            </div>
+        </div>
+        <div class="row justify-content-md-center mt-2">
+            <form action="#" th:action="@{/admin/productsPanel/add}"  th:object="${product}" method="post">
+                    <div class="form-group row">
+                        <label for="model">Product model</label>
+                        <input id="model" class="form-control" type="text" th:value="*{model}" th:field="*{model}">
+                    </div>
+                    <div class="form-group row">
+                        <label for="producer">Product producer</label>
+                        <input id="producer" type="text" class="form-control" th:value="*{producer}" th:field="*{producer}">
+                    </div>
+                    <div class="form-group row">
+                        <label class="sr-only" for="price">Product price</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">zł</div>
+                            </div>
+                            <input type="text" class="form-control" id="price" th:value="*{price}" th:field="*{price}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="amount">Product amount</label>
+                        <input id="amount" class="form-control" th:value="*{amount}" th:field="*{amount}">
+                    </div>
+                    <div class="form-group row">
+                    <label for="desc">Product description</label>
+                    <textarea class="form-control" id="desc" rows="3" th:text="*{description}" th:field="*{description}"></textarea>
+                    </div>
+                     <div class="form-group row">
+                        <label for="category.select">Product category</label>
+                         <select id="category.select" th:field="*{category.id}" class="form-control">
+                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.id}" value="">
+                            </option>
+                         </select>
+                    </div>
+                    <div class="form-group ">
+                            <button type="submit" class="btn btn-success">Add product</button>
+                            <a href="/admin/productsPanel" class="btn btn-danger">Go back</a>
+                    </div>
+            </form>
+        </div>
+        <h3>Add photos after adding the product in the edit panel</h3>
+        <div th:replace="/particles/footer :: footer"></div>
+    </div>
+
+
+</body>
+</html>

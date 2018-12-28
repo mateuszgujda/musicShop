@@ -55,6 +55,10 @@ public class CategoryService {
         categoryRepository.save(toUpdate);
     }
 
+    public void addCategory(Category toAdd){
+        categoryRepository.save(toAdd);
+    }
+
     public void deleteCategoryById(int id){
         categoryRepository.deleteById(id);
     }
