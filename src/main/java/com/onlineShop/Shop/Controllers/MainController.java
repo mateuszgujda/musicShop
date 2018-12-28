@@ -295,6 +295,32 @@ public class MainController {
         return model;
     }
 
+    @RequestMapping(value="/admin/categoriesPanel/{id}", method = RequestMethod.GET)
+    public  ModelAndView categoryEditPanel(@PathVariable int id){
+        ModelAndView model = new ModelAndView("admin/editCategory");
+        Category category = categoryService.findByCategory_id(id);
+        model.addObject("category",category);
+
+        return model;
+    }
+
+    @RequestMapping(value ="/admin/categoriesPanel/{id}/edit",method = RequestMethod.POST)
+    public  ModelAndView editCategory( @ModelAttribute("name") Category toEdit ,@PathVariable int id){
+        Category exists = categoryService.findByCategory_id(id);
+        if(exists !=  null){
+            categoryService.updateCategoryById(id,toEdit);
+        }
+
+        return new ModelAndView("redirect:/admin/categoriesPanel");
+    }
+
+    @RequestMapping(value = "/admin/categoriesPanel/{id}/delete",method = RequestMethod.GET)
+    public ModelAndView deleteCategory(@PathVariable int id){
+        categoryService.deleteCategoryById(id);
+
+        return new ModelAndView("redirect:/admin/categoriesPanel");
+    }
+
     /**
      *Function that enables us to access all categories in Thymeleaf templates
      * @return returns all Categories from the database

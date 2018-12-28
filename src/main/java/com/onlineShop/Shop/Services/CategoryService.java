@@ -41,4 +41,22 @@ public class CategoryService {
 
         return categories;
     }
+
+    public Category findByCategory_id(int category_id){
+        Category found = categoryRepository.findById(category_id);
+
+        return found;
+    }
+
+    public  void updateCategoryById(int id, Category  overwrite){
+        Category toUpdate = categoryRepository.getOne(id);
+
+        toUpdate.setCategory(overwrite.getCategory());
+        categoryRepository.save(toUpdate);
+    }
+
+    public void deleteCategoryById(int id){
+        categoryRepository.deleteById(id);
+    }
+
 }

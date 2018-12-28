@@ -43,8 +43,8 @@
                     </div>
                      <div class="form-group row">
                         <label for="category.select">Product category</label>
-                         <select id="category.select" th:field="*{category.category_id}" class="form-control">
-                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.category_id}" value="">
+                         <select id="category.select" th:field="*{category.id}" class="form-control">
+                            <option th:each="category : ${categories}" th:text="${category.category}" th:value="${category.id}" value="">
                             </option>
                          </select>
                     </div>

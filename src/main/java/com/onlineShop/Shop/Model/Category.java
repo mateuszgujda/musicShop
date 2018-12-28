@@ -21,7 +21,7 @@ public class Category {
     @Id
     @Column(name="category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int category_id;
+    private int id;
 
     /**
      * Name of every category
@@ -37,11 +37,11 @@ public class Category {
 
     /**
      * Parametered constructor
-     * @param category_id category_id that will be set
+     * @param id id that will be set
      * @param category category name that will be set
      */
-    public Category(int category_id, String category){
-        this.category_id = category_id;
+    public Category(int id, String category){
+        this.id = id;
         this.category = category;
     }
 
@@ -58,7 +58,7 @@ public class Category {
     @Override
     public String toString() {
         return "Category{" +
-                "category_id=" + category_id +
+                "id=" + id +
                 ", category='" + category + '\'' +
                 ", products=" + products +
                 '}';
@@ -81,18 +81,18 @@ public class Category {
     }
 
     /**
-     * Default category_id getter
-     * @return category_id
+     * Default id getter
+     * @return id
      */
-    public int getCategory_id() {
-        return category_id;
+    public int getId() {
+        return id;
     }
 
     /**
-     * Default category_id setter
-     * @param category_id category_id which will be set
+     * Default id setter
+     * @param id id which will be set
      */
-    public void setCategory_id(int category_id) {
-        this.category_id = category_id;
+    public void setId(int id) {
+        this.id = id;
     }
 }
