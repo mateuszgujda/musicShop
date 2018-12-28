@@ -67,6 +67,10 @@ public class User {
     private Set<Role> roles;
 
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name="order_id")
+    private Set<Order> orders;
+
     /**
      * Default id getter
      * @return users id
