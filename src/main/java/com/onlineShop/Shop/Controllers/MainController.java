@@ -1,12 +1,12 @@
 package com.onlineShop.Shop.Controllers;
 
-import com.onlineShop.Shop.Model.Category;
-import com.onlineShop.Shop.Model.Product;
-import com.onlineShop.Shop.Model.User;
+import com.onlineShop.Shop.Model.*;
 import com.onlineShop.Shop.Services.CategoryService;
 import com.onlineShop.Shop.Services.ProductService;
 import com.onlineShop.Shop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.Model;
@@ -30,8 +30,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Blob;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * MainController is a class that handles all requests
@@ -58,6 +60,8 @@ public class MainController {
     @Autowired
     CategoryService categoryService;
 
+
+
     /**
      * Method handles the /products mapping and returns list of  {@link com.onlineShop.Shop.Model.Product} based on {@link com.onlineShop.Shop.Model.Category}
      * @param model holds information about attribute that we pass
@@ -80,8 +84,16 @@ public class MainController {
      * @return  returns the index template from thymeleaf folder
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    ModelAndView index(){
+    ModelAndView index(HttpServletRequest request){
         ModelAndView index= new ModelAndView("index");
+        if( SecurityContextHolder.getContext().getAuthentication() != null &&
+                SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
+                //when Anonymous Authentication is enabled
+                !(SecurityContextHolder.getContext().getAuthentication()
+                        instanceof AnonymousAuthenticationToken) ){
+            if(request.getSession().getAttribute("cart") == null)
+            request.getSession().setAttribute("cart",new Cart());
+        }
         return index;
     }
 
@@ -355,6 +367,51 @@ public class MainController {
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }
 
+    @RequestMapping(value= "/cart", method = RequestMethod.GET)
+    public ModelAndView viewCart(HttpServletRequest request){
+        Cart cart = (Cart) request.getSession().getAttribute("cart");
+        if(cart != null){
+            ModelAndView model = new ModelAndView("cart");
+            model.addObject("orderDetails",cart.getOrder().getOrderDetailsSet());
+            model.addObject("price",cart.getPrice());
+
+            return model;
+        }
+        return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping(value="/cart/add/{id}",method = RequestMethod.POST)
+    public ModelAndView addToCart(@PathVariable int id, @RequestParam(value="quantity") int quantity, HttpServletRequest request){
+        Cart cart = (Cart) request.getSession().getAttribute("cart");
+        Product toAdd = productService.getProductByID(id);
+        cart.getOrder().getOrderDetailsSet().add(new OrderDetails(toAdd,quantity));
+        toAdd.setAmount(toAdd.getAmount()-quantity);
+        productService.updateProductByID(id,toAdd);
+        cart.sumUpCart();
+
+
+
+        return new ModelAndView("redirect:/products?category="+toAdd.getCategory().getCategory());
+    }
+
+    @RequestMapping(value="/cart/remove/{id}/{amount}",method = RequestMethod.GET)
+    public ModelAndView removeFromCart(@PathVariable int id, @PathVariable int amount, HttpServletRequest request){
+        Cart cart = (Cart) request.getSession().getAttribute("cart");
+        Product toUpdate = productService.getProductByID(id);
+        Set<OrderDetails> temp = new HashSet(cart.getOrder().getOrderDetailsSet());
+        cart.getOrder().getOrderDetailsSet().clear();
+        for(OrderDetails orderDetails:  temp){
+            if(orderDetails.getProducts().getProduct_id() != id){
+               cart.getOrder().getOrderDetailsSet().add(orderDetails);
+            }
+        }
+        toUpdate.setAmount(toUpdate.getAmount()+amount);
+        productService.updateProductByID(id,toUpdate);
+        cart.sumUpCart();
+       return new ModelAndView("redirect:/cart");
+    }
+
+
     /**
      *Function that enables us to access all categories in Thymeleaf templates
      * @return returns all Categories from the database
@@ -363,4 +420,5 @@ public class MainController {
     public List<Category> categories() {
         return categoryService.findAll();
     }
+
 }

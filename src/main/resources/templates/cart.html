@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="particles/header :: head">
+</head>
+</head>
+<body>
+<div class="container">
+    <div th:insert="particles/navbar :: navbar"></div>
+    <div class="row justify-content-md-center">
+        <div th:if="${orderDetails.isEmpty()}">
+            <h1>Your cart is empty</h1>
+        </div>
+        <table class="table mt-2">
+            <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+        <tbody>
+        <th:block th:each="detail : ${orderDetails}">
+          <tr class="align-middle">
+              <td>
+                  <img class="img-thumbnail" width="200px" height="200px" th:src="@{'/img/products/'+${detail.product.id}+'/1.jpg'}" th:alt="${detail.product.producer} +' '+${detail.product.model} "/>
+                  <p  class="d-inline" th:text="${detail.product.producer} +' ' + ${detail.product.model}"></p>
+              </td>
+              <td th:text="${detail.product.price} + ' zł'"></td>
+              <td th:text="${detail.amount}"></td>
+              <td>
+                  <a style="text-decoration : none" title="Remove from cart" th:href="@{'/cart/remove/'+${detail.product.id}+'/'+${detail.amount}}">
+                      <i class="fas fa-trash-alt"></i>
+                  </a>
+              </td>
+          </tr>
+        </th:block>
+        </tbody>
+        </table>
+        <hr/>
+    </div>
+    <div class="row justify-content-md-end">
+    <p class="text-right">Full price: <th:block th:text="${session.cart.price} +' zł'"></th:block></p>
+    </div>
+    <div class="row justify-content-md-end">
+        <button href="/cart/checkout" th:if="${session.cart.price != 0}" class="btn btn-success ">Checkout</button>
+        <button href="#" th:if="${session.cart.price == 0}" class="btn btn-success disabled">Checkout</button>
+    </div>
+    <div th:replace="particles/footer :: footer"></div>
+</div>
+</body>
+</html>
