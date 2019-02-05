@@ -43,7 +43,7 @@
     <p class="text-right">Full price: <th:block th:text="${session.cart.price} +' zł'"></th:block></p>
     </div>
     <div class="row justify-content-md-end">
-        <button href="/cart/checkout" th:if="${session.cart.price != 0}" class="btn btn-success ">Checkout</button>
+        <a th:href="@{'/cart/checkout'}" th:if="${session.cart.price != 0}" class="btn btn-success ">Checkout</a>
         <button href="#" th:if="${session.cart.price == 0}" class="btn btn-success disabled">Checkout</button>
     </div>
     <div th:replace="particles/footer :: footer"></div>

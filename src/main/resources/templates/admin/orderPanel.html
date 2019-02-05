@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="/particles/header :: head">
+</head>
+<body>
+    <div class="container">
+        <div th:insert="/particles/navbar :: navbar"></div>
+        <h1 class="text-center">Panel administracyjny</h1>
+        <div class="row justify-content-md-center">
+            <div class="btn-group">
+                <a href="/admin/users" class="btn btn-primary">Users</a>
+                <a href="/admin/productsPanel" class="btn btn-primary">Products</a>
+                <a href="/admin/categoriesPanel" class="btn btn-primary">Categories</a>
+                <a href="/admin/ordersPanel" class="btn btn-primary disabled">Orders</a>
+            </div>
+        </div>
+        <table class="table table-bordered mt-2">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Date</th>
+                <th scope="col">Address</th>
+                <th scope="col">Status</th>
+                <th scope="col">Content</th>
+                <th scope="col">Price</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="order: ${orders}">
+                <tr>
+                    <th scope="row" th:text="${order.id}"></th>
+                    <td th:text="${order.date}"></td>
+                    <td th:text="${order.address} + ' ' +${order.postal}+ ' '+${order.town}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td>
+                        <p th:each="details: ${order.orderDetailsSet}" th:text="${details.amount}+' x '+ ${details.product.producer}+ ${details.product.model}">
+                        </p>
+                    </td>
+                    <td th:text="${order.price}+ 'zł' "></td>
+                    <td>
+                        <a  style="text-decoration : none" title="Update order" th:href="@{/admin/ordersPanel/{id}(id=${order.id})}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+
+        <div th:replace="/particles/footer :: footer"></div>
+    </div>
+
+
+</body>
+</html>

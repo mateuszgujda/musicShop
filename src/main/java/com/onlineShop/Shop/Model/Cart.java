@@ -53,7 +53,7 @@ public class Cart {
         }
     }
 
-    public void addToCart(Product productToAdd, int amount){
-        order.getOrderDetailsSet().add(new OrderDetails(productToAdd,amount));
+    public void addToCart(Product productToAdd, int amount, Order orderToAdd){
+        order.getOrderDetailsSet().add(new OrderDetails(productToAdd,amount, orderToAdd));
     }
 }

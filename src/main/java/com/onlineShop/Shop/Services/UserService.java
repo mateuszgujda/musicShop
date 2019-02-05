@@ -88,6 +88,13 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public void updateUser(User user){
+       User toUpdate= userRepository.getOne(user.getUsername());
+        toUpdate.setEmail(user.getEmail());
+
+        userRepository.save(toUpdate);
+    }
+
     /**
      * Function that load user by Username not done because {@link CategoryService} handles login
      * @param s username

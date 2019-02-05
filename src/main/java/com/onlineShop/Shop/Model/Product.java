@@ -59,9 +59,6 @@ public class Product {
     @Column (name="price")
     private Double price;
 
-    @OneToMany(mappedBy="product")
-    Set<OrderDetails> orderDetailsSet;
-
 
     /**
      * Default constructor

@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.*;
 
 
@@ -30,6 +31,31 @@ public class Order{
     @Column(name="address")
     @NotEmpty(message = "Please provide an adress")
     private String address;
+
+    @Column(name="postal")
+    @NotEmpty(message="Please provide postal code")
+    @Pattern(message="Format of postal code like 00-123  ", regexp = "(^[0-9]{2}-[0-9]{3}$)")
+    private String postal;
+
+    @Column(name="town")
+    @NotEmpty(message = "Please provide town to deliver")
+    private String town;
+
+    public String getPostal() {
+        return postal;
+    }
+
+    public void setPostal(String postal) {
+        this.postal = postal;
+    }
+
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
+    }
 
     public double getPrice() {
         return price;
@@ -78,6 +104,7 @@ public class Order{
         return user;
     }
 
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -98,7 +125,7 @@ public class Order{
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order",cascade=CascadeType.ALL)
     private  Set<OrderDetails> orderDetailsSet;
 
 

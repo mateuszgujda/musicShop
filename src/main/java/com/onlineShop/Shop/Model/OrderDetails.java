@@ -1,13 +1,16 @@
 package com.onlineShop.Shop.Model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude="order")
 @Entity
-@Table(name="orderDetails")
+@Table(name="order_details")
 public class OrderDetails {
 
     @Id
@@ -24,6 +27,7 @@ public class OrderDetails {
     @JoinColumn(name="product")
     private Product product;
 
+    @NotNull
     @Column(name="amount")
     private  int amount;
 
@@ -41,9 +45,10 @@ public class OrderDetails {
 
     public OrderDetails(){};
 
-    public OrderDetails(Product product, int amount){
+    public OrderDetails(Product product, int amount,Order order){
         this.product = product;
         this.amount = amount;
+        this.order= order;
     }
 
     public void setOrder(Order order) {

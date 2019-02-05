@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="particles/header :: head">
+</head>
+<body>
+<div th:insert="particles/navbar :: navbar"></div>
+    <h1 class="text-center" th:text="${product.producer} + ${product.model}"></h1>
+    <div class="row justify-content-md-center">
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <th:block th:each="img, i: ${images}">
+                <div th:if="${i.count}==1" class="carousel-item active">
+                    <img class="d-block w-100" th:src="@{/img/products/{id}/{num}.jpg(id=${product.product_id},num=${i.count})}" th:alt="${product.producer} + ${product.model}">
+                </div>
+                    <div th:if="${i.count}!=1" class="carousel-item">
+                        <img class="d-block w-100" th:src="@{/img/products/{id}/{num}.jpg(id=${product.product_id},num=${i.count})}" th:alt="${product.producer} + ${product.model}">
+                    </div>
+                </th:block>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+        <div class="row justify-content-md-center">
+        <p th:text="${product.description}"></p>
+        <p th:if="${product.amount &gt; 0}" class="card-text">In stock : <th:block th:text="${product.amount}"></th:block></p>
+        <p th:if="${product.amount == 0}" class="card-text">OUT OF STOCK</p>
+        <p class="card-text " th:text="'Price: '+${product.price}+'zł'"></p>
+        <form th:if="${product.amount &gt; 0}"  sec:authorize="isAuthenticated()" th:action="@{'/cart/add/'+${product.id}}" method="post">
+            <div class="form-group mb-2">
+                <input class="form-control" style="width:107.733px;" type="number" th:name="quantity" value="1" th:max="${product.amount}" min="1">
+                <button type="submit"  class="btn btn-primary">Add to Cart</button>
+            </div>
+        </form>
+        <a href="/login" sec:authorize="isAnonymous()" class="btn btn-primary">Log in to shop</a>
+        </div>
+<div th:replace="particles/footer :: footer"></div>
+</body>
+</html>

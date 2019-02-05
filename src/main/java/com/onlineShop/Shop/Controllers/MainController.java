@@ -2,17 +2,24 @@ package com.onlineShop.Shop.Controllers;
 
 import com.onlineShop.Shop.Model.*;
 import com.onlineShop.Shop.Services.CategoryService;
+import com.onlineShop.Shop.Services.OrderService;
 import com.onlineShop.Shop.Services.ProductService;
 import com.onlineShop.Shop.Services.UserService;
+import com.onlineShop.Shop.security.MySuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.Model;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,11 +36,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.sql.Blob;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * MainController is a class that handles all requests
@@ -60,6 +65,9 @@ public class MainController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    OrderService orderService;
+
 
 
     /**
@@ -71,12 +79,24 @@ public class MainController {
     @RequestMapping(value = "/products",params = {"category"}, method = RequestMethod.GET)
     ModelAndView products(Model model, @RequestParam("category") String category){
         ModelAndView products =  new ModelAndView("products");
-
+        String success =(String) model.asMap().get("msg");
         List<Product> productLinkedList = productService.getProductsByCategory(category);
 
+        model.addAttribute("success",success);
         model.addAttribute("category",category);
         model.addAttribute("products",productLinkedList);
         return products;
+    }
+
+    @RequestMapping(value="/products/{id}",method = RequestMethod.GET)
+    ModelAndView productDescription(@PathVariable int id){
+        ModelAndView model  = new ModelAndView("productDescription");
+        Product product = productService.getProductByID(id);
+        File directory = new File(getClass().getResource("/static/img/products/"+id).getFile());
+
+        model.addObject("images",directory.listFiles());
+        model.addObject("product",product);
+        return model;
     }
 
     /**
@@ -84,16 +104,13 @@ public class MainController {
      * @return  returns the index template from thymeleaf folder
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    ModelAndView index(HttpServletRequest request){
+    ModelAndView index(HttpServletRequest request,Model model){
         ModelAndView index= new ModelAndView("index");
-        if( SecurityContextHolder.getContext().getAuthentication() != null &&
-                SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
-                //when Anonymous Authentication is enabled
-                !(SecurityContextHolder.getContext().getAuthentication()
-                        instanceof AnonymousAuthenticationToken) ){
-            if(request.getSession().getAttribute("cart") == null)
-            request.getSession().setAttribute("cart",new Cart());
+        String added = (String)model.asMap().get("added");
+        if(added != null){
+            index.addObject("added",added);
         }
+
         return index;
     }
 
@@ -102,8 +119,11 @@ public class MainController {
      * @return returns the login template from thymleaf folder
      */
     @RequestMapping(value="/login",method = RequestMethod.GET)
-    ModelAndView login(){
+    ModelAndView login(Model model, HttpServletRequest request){
         ModelAndView login = new ModelAndView("login");
+        String referer = request.getHeader("Referer");
+
+
         return login;
     }
 
@@ -367,6 +387,30 @@ public class MainController {
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }
 
+    @RequestMapping(value = "/admin/ordersPanel")
+    public ModelAndView ordersPanel(){
+        ModelAndView model = new ModelAndView("admin/orderPanel");
+        model.addObject("orders",orderService.getAllOrders());
+        return model;
+    }
+
+    @RequestMapping(value="/admin/ordersPanel/{id}",method = RequestMethod.GET)
+    public ModelAndView editOrder(@PathVariable int id){
+        ModelAndView model = new ModelAndView("admin/editOrder");
+        model.addObject("order",orderService.findOrderById(id));
+
+        return model;
+    }
+
+    @RequestMapping(value="/admin/ordersPanel/{id}/edit",method = RequestMethod.POST)
+    public ModelAndView orderChanges(@Valid Order orderToSave, @PathVariable int id){
+        ModelAndView model = new ModelAndView("redirect:/admin/ordersPanel");
+        orderService.updateOrder(orderToSave,id);
+
+        return model;
+    }
+
+
     @RequestMapping(value= "/cart", method = RequestMethod.GET)
     public ModelAndView viewCart(HttpServletRequest request){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
@@ -381,13 +425,14 @@ public class MainController {
     }
 
     @RequestMapping(value="/cart/add/{id}",method = RequestMethod.POST)
-    public ModelAndView addToCart(@PathVariable int id, @RequestParam(value="quantity") int quantity, HttpServletRequest request){
+    public ModelAndView addToCart(@PathVariable int id, @RequestParam(value="quantity") int quantity, HttpServletRequest request, RedirectAttributes redirectAttributes){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
         Product toAdd = productService.getProductByID(id);
-        cart.getOrder().getOrderDetailsSet().add(new OrderDetails(toAdd,quantity));
+        cart.getOrder().getOrderDetailsSet().add(new OrderDetails(toAdd,quantity,cart.getOrder()));
         toAdd.setAmount(toAdd.getAmount()-quantity);
         productService.updateProductByID(id,toAdd);
         cart.sumUpCart();
+        redirectAttributes.addFlashAttribute("msg","Product added to cart");
 
 
 
@@ -411,6 +456,67 @@ public class MainController {
        return new ModelAndView("redirect:/cart");
     }
 
+
+    @RequestMapping(value="/cart/checkout",method = RequestMethod.POST)
+    public ModelAndView checkout(@Valid Order orderToAdd,BindingResult result, HttpServletRequest request, RedirectAttributes redirectAttributes, @AuthenticationPrincipal UserDetails currentUser){
+        if(result.hasErrors()){
+            ModelAndView model= new ModelAndView("checkout");
+
+            return model;
+        }
+
+        Cart cart = (Cart) request.getSession().getAttribute("cart");
+        cart.getOrder().setDate(new Date());
+        cart.getOrder().setUser(userService.findUserByUsername(currentUser.getUsername()));
+        cart.getOrder().setPrice(cart.getPrice());
+        cart.getOrder().setStatus("Waiting to be paid");
+        cart.getOrder().setAddress(orderToAdd.getAddress());
+        cart.getOrder().setPostal(orderToAdd.getPostal());
+        cart.getOrder().setTown(orderToAdd.getTown());
+        orderService.saveOrder(cart.getOrder());
+        redirectAttributes.addFlashAttribute("added","Order has been placed");
+        cart.setOrder(new Order());
+        cart.sumUpCart();
+        return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping(value = "/cart/checkout", method = RequestMethod.GET)
+    public ModelAndView sumOrder(HttpServletRequest request){
+        Cart cart = (Cart) request.getSession().getAttribute("cart");
+        ModelAndView model = new ModelAndView("checkout");
+        model.addObject("order",cart.getOrder());
+
+        return model;
+    }
+
+    @RequestMapping(value="/user", method = RequestMethod.GET)
+    public ModelAndView userPanel(HttpServletRequest request){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userService.findUserByUsername(auth.getName());
+        ModelAndView model = new ModelAndView("userPanel");
+        model.addObject("user",currentUser);
+        model.addObject("orders",orderService.findOrderByUsername(currentUser));
+
+        return model;
+    }
+
+    @RequestMapping(value="/cancelOrder/{id}", method = RequestMethod.GET)
+    public  ModelAndView cancelOrder(@PathVariable int id){
+        Order toUpdate = orderService.findOrderById(id);
+        toUpdate.setStatus("Aborted");
+        orderService.updateOrder(toUpdate,id);
+
+        return new ModelAndView("redirect:/user");
+    }
+
+    @RequestMapping(value="/user/edit", method= RequestMethod.POST)
+    public ModelAndView editUserInfo(@Valid User user, BindingResult result){
+        if(!result.hasErrors()){
+            userService.updateUser(user);
+        }
+
+        return new ModelAndView("redirect:/user");
+    }
 
     /**
      *Function that enables us to access all categories in Thymeleaf templates
