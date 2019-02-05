@@ -10,14 +10,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * MySuccessHandler class handles successful user login
+ *
+ * @author  Mateusz Gujda
+ */
 @Component
 public class MySuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    /**
+     * Default constructor
+     */
     public MySuccessHandler() {
         super();
         this.setUseReferer(false);
     }
 
+    /**
+     * Function that handles what happens after succesfull login
+     * @param request Object that hold request attribute infromation
+     * @param response Object that holds response attribute information
+     * @param authentication Oject that holds authentication information
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 

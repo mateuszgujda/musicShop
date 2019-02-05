@@ -88,6 +88,10 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    /**
+     * Function that handles overwriting the user information
+     * @param user Object that holds information to overwrite to
+     */
     public void updateUser(User user){
        User toUpdate= userRepository.getOne(user.getUsername());
         toUpdate.setEmail(user.getEmail());

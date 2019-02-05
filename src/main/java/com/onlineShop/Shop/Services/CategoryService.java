@@ -42,12 +42,22 @@ public class CategoryService {
         return categories;
     }
 
+    /**
+     * Function that returns category found in the database
+     * @param category_id identifier of a category  that should be find in the database
+     * @return Category object found in the database
+     */
     public Category findByCategory_id(int category_id){
         Category found = categoryRepository.findById(category_id);
 
         return found;
     }
 
+    /**
+     * Function handles updating the category
+     * @param id Param by which the category to update is chosen
+     * @param overwrite Category object with information to overwrite with
+     */
     public  void updateCategoryById(int id, Category  overwrite){
         Category toUpdate = categoryRepository.getOne(id);
 
@@ -55,10 +65,18 @@ public class CategoryService {
         categoryRepository.save(toUpdate);
     }
 
+    /**
+     * Function handles adding the category to database
+     * @param toAdd Category Object to add to the database
+     */
     public void addCategory(Category toAdd){
         categoryRepository.save(toAdd);
     }
 
+    /**
+     * Function handles deleting the category from the database
+     * @param id Param by which the category to delete is chosen
+     */
     public void deleteCategoryById(int id){
         categoryRepository.deleteById(id);
     }

@@ -1,10 +1,7 @@
 package com.onlineShop.Shop.Controllers;
 
 import com.onlineShop.Shop.Model.*;
-import com.onlineShop.Shop.Services.CategoryService;
-import com.onlineShop.Shop.Services.OrderService;
-import com.onlineShop.Shop.Services.ProductService;
-import com.onlineShop.Shop.Services.UserService;
+import com.onlineShop.Shop.Services.*;
 import com.onlineShop.Shop.security.MySuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -65,8 +62,17 @@ public class MainController {
     @Autowired
     CategoryService categoryService;
 
+    /**
+     * JPA service that enables getting {@link com.onlineShop.Shop.Model.Order} information from database
+     */
     @Autowired
     OrderService orderService;
+
+    /**
+     * JPA service that enables getting {@link com.onlineShop.Shop.Model.OrderDetails} information from database
+     */
+    @Autowired
+    OrderDetailsService orderDetailsService;
 
 
 
@@ -88,6 +94,11 @@ public class MainController {
         return products;
     }
 
+    /**
+     * Method handles displaying the products detailed page based on product id
+     * @param id  Param by which the product is chosen from {@link ProductService}
+     * @return
+     */
     @RequestMapping(value="/products/{id}",method = RequestMethod.GET)
     ModelAndView productDescription(@PathVariable int id){
         ModelAndView model  = new ModelAndView("productDescription");
@@ -314,6 +325,10 @@ public class MainController {
         return new ModelAndView("redirect:/admin/productsPanel");
     }
 
+    /**
+     * Function handles displaying from for adding a new product to the databse from thymeleaf folder
+     * @return form addProduct from the thymeleaf folder
+     */
     @RequestMapping(value = "/admin/productsPanel/add",method = RequestMethod.GET)
     public ModelAndView addProduct(){
         ModelAndView model = new ModelAndView("admin/addProduct");
@@ -322,6 +337,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Function handles adding a new {@link com.onlineShop.Shop.Model.Product} to the repository
+     * @param toAdd product object which is added to the databased received from the form
+     * @return view to the editProduct for added product
+     */
     @RequestMapping(value = "/admin/productsPanel/add",method = RequestMethod.POST)
     public ModelAndView saveProduct(@Valid Product toAdd){
         productService.addProduct(toAdd);
@@ -344,6 +364,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Method handles displaying category edit panel  based on id
+     * @param id Param by which you choose category from the {@link CategoryService}
+     * @return view of the editPanel html form from Thymeleaf folder
+     */
     @RequestMapping(value="/admin/categoriesPanel/{id}", method = RequestMethod.GET)
     public  ModelAndView categoryEditPanel(@PathVariable int id){
         ModelAndView model = new ModelAndView("admin/editCategory");
@@ -353,6 +378,12 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Method handles overrwriting the category name received from the form
+     * @param toEdit category received from the form
+     * @param id Number by which the category to overwrite is chosen
+     * @return view to the categoriesPanel
+     */
     @RequestMapping(value ="/admin/categoriesPanel/{id}/edit",method = RequestMethod.POST)
     public  ModelAndView editCategory( @ModelAttribute("name") Category toEdit ,@PathVariable int id){
         Category exists = categoryService.findByCategory_id(id);
@@ -363,6 +394,10 @@ public class MainController {
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }
 
+    /**
+     * Method shows the form to the category panel
+     * @return view of addCateogry from thymleaf folder
+     */
     @RequestMapping(value="/admin/categoriesPanel/add",method = RequestMethod.GET)
     public ModelAndView addCategory(){
         ModelAndView model = new ModelAndView("admin/addCategory");
@@ -373,6 +408,11 @@ public class MainController {
     }
 
 
+    /**
+     * Method handles adding new categories to the database;
+     * @param toAdd category to add to the database
+     * @return redirects to the categoriesPanel
+     */
     @RequestMapping(value="/admin/categoriesPanel/add", method = RequestMethod.POST)
     public  ModelAndView saveCategory(@ModelAttribute("name") Category toAdd){
         categoryService.addCategory(toAdd);
@@ -380,6 +420,11 @@ public class MainController {
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }
 
+    /**
+     * Method handles deleting cateogry from the database
+     * @param id number by which it is decided which cateogry to delete
+     * @return returns to the categoriesPanel
+     */
     @RequestMapping(value = "/admin/categoriesPanel/{id}/delete",method = RequestMethod.GET)
     public ModelAndView deleteCategory(@PathVariable int id){
         categoryService.deleteCategoryById(id);
@@ -387,6 +432,10 @@ public class MainController {
         return new ModelAndView("redirect:/admin/categoriesPanel");
     }
 
+    /**
+     * Function handles displaying ordersPanel from thymleaf folder
+     * @return view to the orders panel
+     */
     @RequestMapping(value = "/admin/ordersPanel")
     public ModelAndView ordersPanel(){
         ModelAndView model = new ModelAndView("admin/orderPanel");
@@ -394,6 +443,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Function handles displayin form that enables editing an order
+     * @param id param by which  it is decided which order to edit
+     * @return view of the editOrder form
+     */
     @RequestMapping(value="/admin/ordersPanel/{id}",method = RequestMethod.GET)
     public ModelAndView editOrder(@PathVariable int id){
         ModelAndView model = new ModelAndView("admin/editOrder");
@@ -402,6 +456,12 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Method handles overwriting the order in the database
+     * @param orderToSave object received from the form
+     * @param id id by which it is decided which order to overwrite
+     * @return redirects to the orderPanel
+     */
     @RequestMapping(value="/admin/ordersPanel/{id}/edit",method = RequestMethod.POST)
     public ModelAndView orderChanges(@Valid Order orderToSave, @PathVariable int id){
         ModelAndView model = new ModelAndView("redirect:/admin/ordersPanel");
@@ -411,6 +471,11 @@ public class MainController {
     }
 
 
+    /**
+     * Function handles displaying cart template from thymeleaf folder
+     * @param request Param by which the session cart is accessed
+     * @return returns view of the cart template
+     */
     @RequestMapping(value= "/cart", method = RequestMethod.GET)
     public ModelAndView viewCart(HttpServletRequest request){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
@@ -424,11 +489,30 @@ public class MainController {
         return new ModelAndView("redirect:/");
     }
 
+    /**
+     * Function handles adding product to cart
+     * @param id id of the product that is added to cart
+     * @param quantity quantity of the produt that is added to cart
+     * @param request session attribute to access the cart
+     * @param redirectAttributes object to which we add flash messages
+     * @return redirects to category page
+     */
     @RequestMapping(value="/cart/add/{id}",method = RequestMethod.POST)
     public ModelAndView addToCart(@PathVariable int id, @RequestParam(value="quantity") int quantity, HttpServletRequest request, RedirectAttributes redirectAttributes){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
         Product toAdd = productService.getProductByID(id);
-        cart.getOrder().getOrderDetailsSet().add(new OrderDetails(toAdd,quantity,cart.getOrder()));
+        OrderDetails detailToAddTo = null;
+        for(OrderDetails detail : cart.getOrder().getOrderDetailsSet()){
+            if(detail.getProducts().getProduct_id() == id){
+                detailToAddTo = detail;
+                break;
+            }
+        }
+        if(detailToAddTo != null){
+            detailToAddTo.setAmount(detailToAddTo.getAmount()+quantity);
+        } else {
+            cart.getOrder().getOrderDetailsSet().add(new OrderDetails(toAdd,quantity,cart.getOrder()));
+        }
         toAdd.setAmount(toAdd.getAmount()-quantity);
         productService.updateProductByID(id,toAdd);
         cart.sumUpCart();
@@ -439,6 +523,13 @@ public class MainController {
         return new ModelAndView("redirect:/products?category="+toAdd.getCategory().getCategory());
     }
 
+    /**
+     * Function handles removing products from cart
+     * @param id id by which the product to remove is decided
+     * @param amount amount of the product that is returned 'to the shop'
+     * @param request object by which we access session atributes
+     * @return view of the cart
+     */
     @RequestMapping(value="/cart/remove/{id}/{amount}",method = RequestMethod.GET)
     public ModelAndView removeFromCart(@PathVariable int id, @PathVariable int amount, HttpServletRequest request){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
@@ -447,16 +538,24 @@ public class MainController {
         cart.getOrder().getOrderDetailsSet().clear();
         for(OrderDetails orderDetails:  temp){
             if(orderDetails.getProducts().getProduct_id() != id){
-               cart.getOrder().getOrderDetailsSet().add(orderDetails);
+                cart.getOrder().getOrderDetailsSet().add(orderDetails);
             }
         }
         toUpdate.setAmount(toUpdate.getAmount()+amount);
         productService.updateProductByID(id,toUpdate);
         cart.sumUpCart();
-       return new ModelAndView("redirect:/cart");
+        return new ModelAndView("redirect:/cart");
     }
 
-
+    /**
+     * Function handles finalizing the purchasing process and adds an order to the database
+     * @param orderToAdd order to add to the database
+     * @param result if there are errors in the delivery address form returns to the form
+     * @param request object by which the cart is accessed
+     * @param redirectAttributes object by which the flash messages are added
+     * @param currentUser user that is placing an order
+     * @return returns the main page view
+     */
     @RequestMapping(value="/cart/checkout",method = RequestMethod.POST)
     public ModelAndView checkout(@Valid Order orderToAdd,BindingResult result, HttpServletRequest request, RedirectAttributes redirectAttributes, @AuthenticationPrincipal UserDetails currentUser){
         if(result.hasErrors()){
@@ -480,6 +579,11 @@ public class MainController {
         return new ModelAndView("redirect:/");
     }
 
+    /**
+     * Function handles displaying form for the delivery address
+     * @param request object by which the cart is accessed
+     * @return returns view of the checkout template from thymeleaf folder
+     */
     @RequestMapping(value = "/cart/checkout", method = RequestMethod.GET)
     public ModelAndView sumOrder(HttpServletRequest request){
         Cart cart = (Cart) request.getSession().getAttribute("cart");
@@ -489,6 +593,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Function handles displaying user panel
+     * @param request object by which the cart is accessed
+     * @return returns userPanel template from thymeleaf folder
+     */
     @RequestMapping(value="/user", method = RequestMethod.GET)
     public ModelAndView userPanel(HttpServletRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -500,6 +609,11 @@ public class MainController {
         return model;
     }
 
+    /**
+     * Handles canceling an order
+     * @param id id by which the order to cancel is chosen
+     * @return returns userPanel view
+     */
     @RequestMapping(value="/cancelOrder/{id}", method = RequestMethod.GET)
     public  ModelAndView cancelOrder(@PathVariable int id){
         Order toUpdate = orderService.findOrderById(id);
@@ -509,14 +623,6 @@ public class MainController {
         return new ModelAndView("redirect:/user");
     }
 
-    @RequestMapping(value="/user/edit", method= RequestMethod.POST)
-    public ModelAndView editUserInfo(@Valid User user, BindingResult result){
-        if(!result.hasErrors()){
-            userService.updateUser(user);
-        }
-
-        return new ModelAndView("redirect:/user");
-    }
 
     /**
      *Function that enables us to access all categories in Thymeleaf templates

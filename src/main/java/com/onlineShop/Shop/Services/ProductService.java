@@ -90,6 +90,10 @@ public class ProductService{
         productRepository.save(product_to_update);
     }
 
+    /**
+     * Function that handles adding product to the database
+     * @param toAdd Product object to add to the database
+     */
     public  void addProduct(Product toAdd){
         productRepository.save(toAdd);
     }

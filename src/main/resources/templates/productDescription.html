@@ -3,9 +3,11 @@
 <head th:replace="particles/header :: head">
 </head>
 <body>
+<div class="container">
 <div th:insert="particles/navbar :: navbar"></div>
-    <h1 class="text-center" th:text="${product.producer} + ${product.model}"></h1>
+    <h1 class="text-center" th:text="${product.producer} +' '+ ${product.model}"></h1>
     <div class="row justify-content-md-center">
+        <div class="col sm-12">
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 <th:block th:each="img, i: ${images}">
@@ -26,12 +28,9 @@
                 <span class="sr-only">Next</span>
             </a>
         </div>
-    </div>
-        <div class="row justify-content-md-center">
-        <p th:text="${product.description}"></p>
-        <p th:if="${product.amount &gt; 0}" class="card-text">In stock : <th:block th:text="${product.amount}"></th:block></p>
-        <p th:if="${product.amount == 0}" class="card-text">OUT OF STOCK</p>
-        <p class="card-text " th:text="'Price: '+${product.price}+'zł'"></p>
+        <p class="text-justify" th:if="${product.amount &gt; 0}">In stock : <th:block th:text="${product.amount}"></th:block></p>
+        <p class="text-justify" th:if="${product.amount == 0}">OUT OF STOCK</p>
+        <p class="text-justify" th:text="'Price: '+${product.price}+'zł'"></p>
         <form th:if="${product.amount &gt; 0}"  sec:authorize="isAuthenticated()" th:action="@{'/cart/add/'+${product.id}}" method="post">
             <div class="form-group mb-2">
                 <input class="form-control" style="width:107.733px;" type="number" th:name="quantity" value="1" th:max="${product.amount}" min="1">
@@ -40,6 +39,11 @@
         </form>
         <a href="/login" sec:authorize="isAnonymous()" class="btn btn-primary">Log in to shop</a>
         </div>
+    <div class="col">
+        <p class="text-justify" th:text="${product.description}"></p>
+    </div>
+    </div>
 <div th:replace="particles/footer :: footer"></div>
+</div>
 </body>
 </html>
